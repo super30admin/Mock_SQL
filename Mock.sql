@@ -23,3 +23,10 @@ count(distinct product_key)=(Select count(product_key) as cnt from Product)
 select product_id,Sales.year as first_year, quantity, price from Sales
 where (product_id,Sales.year) in( select product_id,min(year) as first_year  
 from Sales group by product_id)
+
+--  Tournamnet winners
+
+with cte as (SELECT match_id,first_player as player_id, first_score as score from matches  union All 
+select  match_id, second_player as player_id, second_score as score from matches )
+
+select distinct group_id ,first_value(player_id ) over( partition by group_id order by total desc , player_id) as player_id from(select c.player_id, sum(score) as total ,group_id from cte c join players p on c.player_id=p.player_id group by c.player_id) as sub
