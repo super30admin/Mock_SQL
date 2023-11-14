@@ -1,0 +1,12 @@
+# Write your MySQL query statement below
+select p1.sale_date, (p1.sold_apple - p2.sold_orange) as diff
+from
+(select sale_date, sum(sold_num) over (partition by sale_date) as sold_apple
+from Sales
+where fruit='apples') p1
+join
+(select sale_date, sum(sold_num) over (partition by sale_date) as sold_orange
+from Sales
+where fruit='oranges') p2
+on p1.sale_date=p2.sale_date
+order by p1.sale_date
