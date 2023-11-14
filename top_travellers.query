@@ -1,0 +1,7 @@
+# Write your MySQL query statement below
+select u.name, ifnull(p.travelled_distance,0) as travelled_distance
+from Users u
+left join
+(select distinct user_id, sum(distance) over (partition by user_id) as travelled_distance from Rides) p
+on u.id=p.user_id
+order by travelled_distance desc, name asc
