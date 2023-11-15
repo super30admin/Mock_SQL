@@ -1,0 +1,30 @@
+Top Travellers
+
+# Write your MySQL query statement below
+
+select u.name, IFNULL(SUM(r.distance),0) as travelled_distance from Users as u
+left join Rides as r ON u.id=r.user_id 
+group by u.id order by SUM(r.distance) DESC, u.name;
+
+
+Apples & Oranges
+# Write your MySQL query statement below
+
+with CTE AS(
+select sale_date, sold_num as applessold from Sales where fruit='apples' group by sale_date
+),
+ CTE2 AS(
+select sale_date, sold_num as orsold from Sales where fruit='oranges' group by sale_date
+)
+SELECT CTE.sale_date, (applessold-orsold) AS diff from CTE INNER JOIN CTE2 ON CTE.sale_date=CTE2.sale_date
+ORDER BY 1
+
+
+#method2
+SELECT
+    sale_date,
+    SUM(
+        IF(fruit = 'apples', sold_num, -sold_num)
+    ) AS diff
+FROM Sales
+GROUP BY sale_date
