@@ -1,0 +1,6 @@
+Customer who bought all products 
+
+with cte as (select count(*) as products from product),
+acte as (select c.customer_id, count(distinct product_key) as numofproducts from customer c  group by c.customer_id)
+
+select a.customer_id from acte a, cte c where a.numofproducts=c.products
