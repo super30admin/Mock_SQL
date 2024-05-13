@@ -1,0 +1,103 @@
+mock sql
+
+week 1:
+
+prob 1: Top Travellers 
+
+select u.name, ifnull(sum(distance),0) as  travelled_distance
+from users u left join rides r on u.id = r.user_id
+group by r.user_id
+order by travelled_distance desc , u.name asc
+
+
+
+prob 2: Apples and Oranges
+
+with cte as(
+    select sale_date, fruit, sold_num 
+from Sales 
+where fruit = "apples" ),
+acte as( 
+    select sale_date, fruit, sold_num 
+from Sales 
+where fruit = "oranges"
+)
+
+select c.sale_date , coalesce(c.sold_num - a.sold_num,c.sold_num,a.sold_num) as diff 
+from cte c left join acte a on c.sale_date = a.sale_date
+order by c.sale_date
+
+
+
+
+week 2:
+
+prob 1: Product Sales Analysis III
+
+SELECT product_id,year as first_year , quantity, price 
+from sales s
+where (year, product_id)in (
+    select min(year), product_id
+    from sales 
+    group by product_id
+)
+
+
+
+prob 2: Customer who bought all products
+
+select customer_id from Customer c 
+group by customer_id
+having count(distinct product_key) = (select count(product_key) from Product)
+
+
+
+
+week 3:
+
+prob 1: Tournament Winners
+
+with cte as(
+    select first_player as player , first_score as score from Matches
+    union all 
+    select second_player as player , second_score as score from Matches
+    ),
+acte as(
+    select c.player as player_id , p.group_id , sum(c.score) as score
+    from cte c join Players p on p.player_id = c.player
+    group by c.player, p.group_id
+    ),
+bcte as(
+    select group_id , player_id ,row_number() OVER (PARTITION BY group_id ORDER BY score DESC,player_id) AS score_number
+    FROM acte 
+    )
+ 
+select group_id , player_id from bcte where score_number = 1
+
+
+
+
+
+prob 2: Market Analysis II
+
+with cte as(
+    select u.user_id as seller_id,count(seller_id) as cnt from Users u left join Orders o on u.user_id = o.seller_id
+    group by seller_id 
+    ),
+acte as(   
+    select seller_id, item_id , rank() over (partition by seller_id order by order_date ) as rnk 
+    from Orders
+    ),
+bcte as (
+    select a.seller_id, i.item_brand from acte a join Items i on a.item_id = i.item_id
+    where a.rnk =2
+    order by a.seller_id 
+    )
+select u.user_id as seller_id,
+case
+    when u.favorite_brand  = b.item_brand then 'yes'
+    else 'no'
+end as 2nd_item_fav_brand
+from Users u left join bcte b on u.user_id = b.seller_id
+order by seller_id
+
