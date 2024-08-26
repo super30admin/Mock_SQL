@@ -1,0 +1,5 @@
+# Write your MySQL query statement below
+SELECT sale_date, (apples_sold - oranges_sold) AS diff
+FROM (SELECT sale_date,
+    SUM(CASE WHEN fruit = 'apples' THEN sold_num ELSE 0 END) AS apples_sold,
+    SUM(CASE WHEN fruit = 'oranges' THEN sold_num ELSE 0 END) AS oranges_sold FROM Sales GROUP BY sale_date) AS daily_sales ORDER BY sale_date;

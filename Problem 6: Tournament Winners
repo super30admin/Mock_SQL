@@ -1,0 +1,9 @@
+# Write your MySQL query statement below
+SELECT group_id, player_id FROM(
+    SELECT p.player_id, p.group_id, RANK() OVER (PARTITION BY p.group_id ORDER BY SUM(
+        CASE
+            WHEN p.player_id = m.first_player THEN m.first_score
+            ELSE m.second_score
+        END
+    )DESC, p.player_id ASC) AS rnk FROM Players p JOIN Matches m ON p.player_id IN (m.first_player, m.second_player) GROUP BY p.group_id, p.player_id
+) AS intermediate WHERE rnk = 1;

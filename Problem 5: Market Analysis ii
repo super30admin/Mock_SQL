@@ -1,0 +1,15 @@
+# Write your MySQL query statement below
+WITH CTE AS(
+    SELECT o.seller_id, o.order_date, i.item_brand, ROW_NUMBER() OVER(PARTITION BY o.seller_id ORDER BY o.order_date) AS 'rnk'
+    FROM Orders o JOIN Items i ON o.item_id = i.item_id
+)
+SELECT u.user_id AS seller_id,
+    CASE 
+        WHEN c.rnk = 2 AND c.item_brand = u.favorite_brand THEN 'yes'
+        WHEN c.rnk = 2 THEN 'no'
+        ELSE 'no'
+    END AS 2nd_item_fav_brand
+FROM
+    Users u
+LEFT JOIN
+    CTE c ON u.user_id = c.seller_id AND c.rnk = 2;
