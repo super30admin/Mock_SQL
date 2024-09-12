@@ -1,0 +1,19 @@
+Product Sales Analysis III
+
+WITH CTE AS(
+SELECT *, RANK() OVER(PARTITION BY product_id ORDER BY year) AS 'rnk'
+FROM Sales)
+
+SELECT c.product_id, c.year AS 'first_year', c.quantity, c.price
+FROM CTE c WHERE c.rnk = 1; 
+
+
+Customers Who Bought All Products
+
+WITH CTE AS(
+SELECT customer_id, COUNT(DISTINCT product_key) AS 'r' 
+FROM Customer
+GROUP BY customer_id)
+
+SELECT customer_id
+FROM CTE WHERE r = (SELECT COUNT(*) FROM Product);

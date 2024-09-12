@@ -1,0 +1,35 @@
+Tournament Winners
+
+SELECT f.group_id, f.player_id FROM (
+SELECT p.group_id, p.player_id, DENSE_RANK() OVER(PARTITION BY p.group_id ORDER BY SUM(
+    CASE
+        WHEN p.player_id = m.first_player THEN m.first_score
+        ELSE m.second_score
+    END )DESC, p.player_id ASC) AS 'rnk'
+FROM Players p INNER JOIN Matches m
+ON p.player_id IN (m.first_player, m.second_player)
+GROUP BY p.group_id, p.player_id) F
+WHERE rnk = 1;
+
+Market Analysis II
+
+WITH CTE AS(
+SELECT *, RANK() OVER(PARTITION BY seller_id ORDER BY order_date) AS 'rnk'
+FROM Orders),
+
+CTE3 AS(
+SELECT order_id, order_date,item_id, buyer_id, seller_id
+FROM CTE WHERE rnk = 2
+),
+
+CTE2 AS(
+SELECT u.user_id, i.item_id FROM Users u INNER JOIN Items i ON u.favorite_brand = i.item_brand)
+
+SELECT c2.user_id AS 'seller_id', 
+CASE 
+    WHEN c2.user_id = c.seller_id AND c.item_id = c2.item_id THEN 'yes'
+    ELSE 'no'
+END 
+AS '2nd_item_fav_brand'
+FROM CTE2 c2 LEFT JOIN CTE3 c ON c2.user_id = c.seller_id
+ORDER BY seller_id;
