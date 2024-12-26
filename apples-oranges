@@ -1,0 +1,11 @@
+with cte1 as ( 
+select sale_date,sold_num from sales where fruit ='apples' order by sale_date 
+), 
+cte2 as ( 
+select sale_date,sold_num from sales where fruit ='oranges' order by sale_date 
+) 
+select a.sale_date,a.sold_num-b.sold_num as diff from  
+cte1 a 
+join  
+cte2 b 
+on a.sale_date = b.sale_date ;
