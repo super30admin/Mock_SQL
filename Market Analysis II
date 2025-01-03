@@ -1,0 +1,11 @@
+with cte as(
+    select o.order_date, o.item_id, o.seller_id, rank() over (partition by o.seller_id order by o.order_date) as 'rank' from orders o
+),
+ACTE AS
+(select  c.item_id, c.seller_id , i.item_brand from cte c join items i on c.item_id=i.item_id where c.rank=2) 
+
+select u.user_id as 'seller_id',
+CASE
+    when a.item_brand = u.favorite_brand then 'yes' 
+    else 'no' 
+END as '2nd_item_fav_brand'  from ACTE a right join users u on a.seller_id=u.user_id

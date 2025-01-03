@@ -1,0 +1,11 @@
+
+with cte as(
+    select first_player as player_id, sum(first_score) as total from (select first_player, first_score from matches
+    union all 
+    select second_player, second_score from matches) a group by first_player
+) ,
+
+acte as (select c.player_id, p.group_id, c.total , row_number() over (partition by p.group_id order by c.total desc ,c.player_id ASC) as rnk from cte c join players p on 
+c.player_id=p.player_id)
+
+select group_id, player_id from acte where rnk=1;
