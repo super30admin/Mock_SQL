@@ -1,0 +1,2 @@
+with apple as (select sale_date, sold_num from sales where fruit = 'apples'), orange as (select sale_date, sold_num from sales where fruit = 'oranges')
+select a.sale_date, (a.sold_num - o.sold_num) as diff from apple a join orange o on o.sale_date = a.sale_date;
