@@ -1,0 +1,18 @@
+#Apples&Oranges_Solution
+
+select s1.sale_date,
+(s1.sold_num - s2.sold_num) AS diff
+from sales s1
+Join sales s2 ON s1.sale_date= s2.sale_date where s1.fruit= 'apples' AND s2.fruit= 'oranges'
+Order by s1.sale_date;
+
+
+#TopTravellers_Solution
+
+#using IFNULL because we don't want a null value (Donald 0) and use Left Join
+
+SELECT u.name, IFNULL(SUM(r.distance),0) AS travelled_distance 
+FROM users u
+LEFT JOIN rides r ON u.id = r.user_id
+GROUP BY r.user_id
+ORDER BY travelled_distance DESC, u.name;
