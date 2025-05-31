@@ -1,0 +1,14 @@
+Top Travellers
+
+# Write your MySQL query statement below
+
+select u.name, SUM(IFNULL(r.distance,0)) as 'travelled_distance' from Users u left join Rides r on u.id = r.user_id group by r.user_id order by travelled_distance DESC, u.name asc;
+
+Apples & Oranges
+
+# Write your MySQL query statement below
+WITH CTE AS (select sale_date, sold_num from Sales where fruit='apples'
+),
+CTE1 AS (select sale_date, sold_num from Sales where fruit='oranges')
+
+select sale_date, sold_num -(select sold_num from CTE1 where CTE1.sale_date = CTE.sale_date  ) as 'diff' from CTE; 
